@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>KnowledgeHub CS12 – Library Intelligence Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chartjs-plugin-datalabels/2.2.0/chartjs-plugin-datalabels.min.js"></script>
+<style>
+/* ══════════════════════════════════════
+   GLOBAL RESET
+══════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ══════════════════════════════════════
+   LOGIN PAGE STYLES
+══════════════════════════════════════ */
+:root {
+  --ink: #0f0e11;
+  --cream: #f5f0e8;
+  --gold: #c9a84c;
+  --gold-light: #e8c96b;
+  --teal: #1a6b72;
+  --teal-dark: #124d52;
+  --error: #c0392b;
+  --muted: #7a7472;
+}
+
+body { font-family: 'DM Sans', sans-serif; }
+
+/* ── LOGIN PAGE ── */
+#login-page {
+  background: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+#login-page::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(201,168,76,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(201,168,76,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridDrift 20s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes gridDrift {
+  0% { background-position: 0 0; }
+  100% { background-position: 60px 60px; }
+}
+
+.left-panel {
+  width: 55%;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 60px;
+  overflow: hidden;
+}
+
+.left-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 30% 60%, rgba(26,107,114,0.35) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.15) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.deco-circle { position: absolute; border-radius: 50%; border: 1px solid rgba(201,168,76,0.15); }
+.deco-circle.c1 { width: 500px; height: 500px; top: -100px; left: -150px; }
+.deco-circle.c2 { width: 320px; height: 320px; bottom: 80px; right: -80px; border-color: rgba(26,107,114,0.25); }
+.deco-circle.c3 { width: 180px; height: 180px; top: 40%; left: 50%; border-color: rgba(201,168,76,0.1); }
+
+.login-brand { position: relative; z-index: 2; }
+.login-brand-mark { display: flex; align-items: center; gap: 14px; margin-bottom: 8px; }
+.login-brand-icon { width: 48px; height: 48px; background: var(--gold); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+.login-brand-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; color: var(--cream); letter-spacing: 0.5px; }
+.login-brand-sub { font-size: 11px; color: var(--muted); letter-spacing: 3px; text-transform: uppercase; margin-left: 62px; }
+
+.hero { position: relative; z-index: 2; }
+.hero-eyebrow { font-size: 11px; letter-spacing: 4px; text-transform: uppercase; color: var(--gold); margin-bottom: 20px; display: flex; align-items: center; gap: 12px; }
+.hero-eyebrow::before { content: ''; width: 32px; height: 1px; background: var(--gold); }
+.hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(42px, 5vw, 68px); font-weight: 900; color: var(--cream); line-height: 1.05; margin-bottom: 28px; }
+.hero h1 em { font-style: italic; color: var(--gold-light); }
+.hero p { font-size: 16px; line-height: 1.7; color: var(--muted); max-width: 420px; font-weight: 300; }
+
+.stats-row { position: relative; z-index: 2; display: flex; gap: 40px; }
+.stat-value { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--cream); }
+.stat-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-top: 2px; }
+.stat-divider { width: 1px; background: rgba(255,255,255,0.08); align-self: stretch; }
+
+.right-panel {
+  width: 45%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 50px;
+  position: relative;
+}
+
+.right-panel::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 10%; bottom: 10%;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(201,168,76,0.3) 30%, rgba(201,168,76,0.3) 70%, transparent);
+}
+
+.form-card { width: 100%; max-width: 400px; animation: slideUp 0.7s cubic-bezier(0.22,1,0.36,1) both; }
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.form-header { margin-bottom: 40px; }
+.form-header h2 { font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 700; color: var(--cream); margin-bottom: 8px; }
+.form-header p { font-size: 14px; color: var(--muted); font-weight: 300; }
+.form-header .any-hint { font-size: 12px; color: var(--gold); background: rgba(201,168,76,0.08); border: 1px solid rgba(201,168,76,0.2); border-radius: 8px; padding: 8px 12px; margin-top: 10px; }
+
+.field-group { margin-bottom: 22px; }
+
+label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+
+.input-wrap { position: relative; }
+.input-wrap .icon { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); font-size: 16px; pointer-events: none; opacity: 0.5; }
+
+input[type="text"], input[type="password"], input[type="email"] {
+  width: 100%;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 15px 16px 15px 46px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  color: var(--cream);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+input::placeholder { color: rgba(255,255,255,0.2); }
+input:focus { border-color: var(--gold); background: rgba(201,168,76,0.04); }
+
+.toggle-pass { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--muted); cursor: pointer; font-size: 14px; padding: 4px; }
+
+.form-options { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; }
+.remember { display: flex; align-items: center; gap: 10px; cursor: pointer; }
+.remember input[type="checkbox"] { width: 18px; height: 18px; accent-color: var(--gold); border-radius: 4px; padding: 0; }
+.remember span { font-size: 13px; color: var(--muted); }
+.forgot-link { font-size: 13px; color: var(--gold); text-decoration: none; transition: color 0.2s; }
+.forgot-link:hover { color: var(--gold-light); }
+
+.btn-login {
+  width: 100%;
+  padding: 16px;
+  background: linear-gradient(135deg, var(--teal), var(--teal-dark));
+  border: none;
+  border-radius: 10px;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--cream);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.btn-login::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); opacity: 0; transition: opacity 0.2s; }
+.btn-login:hover { transform: translateY(-1px); box-shadow: 0 8px 30px rgba(26,107,114,0.4); }
+.btn-login:hover::before { opacity: 1; }
+.btn-login:active { transform: translateY(0); }
+.btn-login .btn-inner { display: flex; align-items: center; justify-content: center; gap: 10px; }
+
+.divider { display: flex; align-items: center; gap: 14px; margin: 28px 0; }
+.divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.07); }
+.divider span { font-size: 12px; color: var(--muted); letter-spacing: 1px; }
+
+.demo-creds { background: rgba(201,168,76,0.06); border: 1px solid rgba(201,168,76,0.15); border-radius: 10px; padding: 16px; text-align: center; }
+.demo-creds p { font-size: 12px; color: var(--muted); margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase; }
+.demo-creds .cred-row { display: flex; justify-content: center; gap: 20px; }
+.cred-pill { background: rgba(255,255,255,0.05); border-radius: 6px; padding: 6px 14px; font-size: 12px; color: var(--cream); cursor: pointer; border: 1px solid rgba(255,255,255,0.08); transition: all 0.2s; }
+.cred-pill:hover { background: rgba(201,168,76,0.1); border-color: var(--gold); }
+
+@media (max-width: 768px) {
+  #login-page { flex-direction: column; }
+  .left-panel { width: 100%; padding: 40px 30px 30px; min-height: 40vh; }
+  .right-panel { width: 100%; padding: 40px 30px; }
+  .right-panel::before { display: none; }
+  .stats-row { gap: 24px; }
+}
+
+/* ══════════════════════════════════════
+   DASHBOARD PAGE STYLES
+══════════════════════════════════════ */
+#dashboard-page {
+  display: none;
+  font-family: 'Outfit', sans-serif;
+  background: #0d1117;
+  color: #e8e0d0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+#dashboard-page.visible {
+  display: flex;
+}
+
+:root {
+  --dk-ink: #0d1117;
+  --dk-ink2: #161c24;
+  --dk-paper: #f5f0e8;
+  --dk-paper2: #ede8df;
+  --dk-gold: #c9a84c;
+  --dk-gold-light: rgba(201,168,76,0.15);
+  --dk-rust: #8b3a2a;
+  --dk-sage: #4a6741;
+  --dk-sky: #2a5f8b;
+  --dk-muted: #7a7060;
+  --dk-border: rgba(201,168,76,0.18);
+  --sidebar-w: 260px;
+  --card-r: 16px;
+}
+
+/* SIDEBAR */
+.sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  background: #0a0e13;
+  border-right: 1px solid var(--dk-border);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  bottom: -100px; left: -50px;
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, rgba(201,168,76,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.sidebar-brand {
+  padding: 28px 24px 20px;
+  border-bottom: 1px solid var(--dk-border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-icon {
+  width: 38px; height: 38px;
+  background: linear-gradient(135deg, var(--dk-gold), #8a6a20);
+  border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+  box-shadow: 0 0 20px rgba(201,168,76,0.25);
+}
+
+.brand-name { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--dk-paper); line-height: 1.1; }
+.brand-name small { display: block; font-size: 10px; font-family: 'DM Mono', monospace; color: var(--dk-muted); font-weight: 300; letter-spacing: 0.1em; margin-top: 2px; }
+
+.sidebar-nav { flex: 1; padding: 20px 14px; overflow-y: auto; }
+.nav-section-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.15em; color: var(--dk-muted); padding: 10px 10px 8px; margin-top: 10px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 14px; border-radius: 10px; cursor: pointer;
+  transition: all 0.2s; color: #8a8070; font-size: 14px; font-weight: 400;
+  margin-bottom: 2px; position: relative;
+}
+
+.nav-item:hover { background: rgba(201,168,76,0.07); color: var(--dk-paper); }
+.nav-item.active { background: rgba(201,168,76,0.12); color: var(--dk-gold); font-weight: 500; }
+.nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; height: 60%; width: 3px; background: var(--dk-gold); border-radius: 0 3px 3px 0; }
+.nav-icon { font-size: 16px; flex-shrink: 0; }
+.nav-badge { margin-left: auto; background: var(--dk-rust); color: white; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 20px; font-family: 'DM Mono', monospace; }
+
+.sidebar-user { padding: 16px 20px; border-top: 1px solid var(--dk-border); display: flex; align-items: center; gap: 12px; }
+.user-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--dk-gold), var(--dk-rust)); display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; color: white; flex-shrink: 0; }
+.user-info { flex: 1; }
+.user-name { font-size: 13px; font-weight: 500; color: var(--dk-paper); }
+.user-role { font-size: 11px; color: var(--dk-muted); font-family: 'DM Mono', monospace; }
+.logout-btn { background: none; border: none; cursor: pointer; color: var(--dk-muted); font-size: 16px; transition: color 0.2s; padding: 4px; }
+.logout-btn:hover { color: #e05a40; }
+
+/* MAIN */
+.main { flex: 1; height: 100vh; overflow-y: auto; display: flex; flex-direction: column; }
+
+/* TOPBAR */
+.topbar {
+  background: rgba(13,17,23,0.95);
+  border-bottom: 1px solid var(--dk-border);
+  padding: 14px 32px;
+  display: flex; align-items: center; gap: 16px;
+  position: sticky; top: 0; z-index: 50;
+  backdrop-filter: blur(10px);
+}
+
+.page-title { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 600; color: var(--dk-paper); flex: 1; }
+.page-title span { font-size: 13px; font-family: 'DM Mono', monospace; color: var(--dk-muted); font-weight: 300; margin-left: 12px; vertical-align: middle; }
+
+.search-bar { display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05); border: 1px solid var(--dk-border); border-radius: 10px; padding: 8px 16px; width: 240px; }
+.search-bar input { background: none; border: none; outline: none; color: var(--dk-paper); font-family: 'Outfit', sans-serif; font-size: 13px; width: 100%; }
+.search-bar input::placeholder { color: var(--dk-muted); }
+
+.topbar-icon { width: 38px; height: 38px; background: rgba(255,255,255,0.05); border: 1px solid var(--dk-border); border-radius: 9px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; font-size: 16px; color: var(--dk-muted); }
+.topbar-icon:hover { background: var(--dk-gold-light); border-color: var(--dk-gold); color: var(--dk-gold); }
+.topbar-icon.has-notif { position: relative; }
+.topbar-icon.has-notif::after { content: ''; position: absolute; top: 7px; right: 7px; width: 7px; height: 7px; background: var(--dk-rust); border-radius: 50%; border: 2px solid #0d1117; }
+.date-tag { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--dk-muted); white-space: nowrap; }
+
+/* CONTENT */
+.content { padding: 28px 32px 40px; flex: 1; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* KPI CARDS */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.kpi-card { background: #111722; border: 1px solid var(--dk-border); border-radius: var(--card-r); padding: 22px 24px; position: relative; overflow: hidden; cursor: default; transition: transform 0.2s, box-shadow 0.2s; }
+.kpi-card:hover { transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+.kpi-card::after { content: ''; position: absolute; top: 0; right: 0; width: 80px; height: 80px; border-radius: 50%; filter: blur(30px); opacity: 0.15; }
+.kpi-card.gold::after { background: var(--dk-gold); }
+.kpi-card.rust::after { background: var(--dk-rust); }
+.kpi-card.sage::after { background: var(--dk-sage); }
+.kpi-card.sky::after { background: var(--dk-sky); }
+.kpi-icon { font-size: 22px; margin-bottom: 14px; display: block; }
+.kpi-val { font-family: 'DM Mono', monospace; font-size: 32px; font-weight: 500; line-height: 1; margin-bottom: 6px; }
+.kpi-card.gold .kpi-val { color: var(--dk-gold); }
+.kpi-card.rust .kpi-val { color: #e05a40; }
+.kpi-card.sage .kpi-val { color: #6daa62; }
+.kpi-card.sky .kpi-val { color: #5ca0d0; }
+.kpi-label { font-size: 12px; color: var(--dk-muted); font-weight: 400; text-transform: uppercase; letter-spacing: 0.08em; }
+.kpi-delta { position: absolute; top: 20px; right: 20px; font-size: 11px; font-family: 'DM Mono', monospace; color: #6daa62; background: rgba(109,170,98,0.12); padding: 3px 8px; border-radius: 20px; }
+.kpi-delta.down { color: #e05a40; background: rgba(224,90,64,0.12); }
+
+/* CHARTS */
+.charts-grid { display: grid; grid-template-columns: 1.6fr 1fr; gap: 16px; margin-bottom: 24px; }
+.chart-card { background: #111722; border: 1px solid var(--dk-border); border-radius: var(--card-r); padding: 24px; }
+.chart-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 20px; }
+.chart-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--dk-paper); line-height: 1.2; }
+.chart-sub { font-size: 11px; color: var(--dk-muted); margin-top: 3px; font-family: 'DM Mono', monospace; }
+.chart-tag { font-size: 11px; color: var(--dk-gold); background: var(--dk-gold-light); border: 1px solid rgba(201,168,76,0.3); padding: 4px 10px; border-radius: 20px; font-family: 'DM Mono', monospace; }
+canvas { max-height: 220px; }
+
+/* BOTTOM GRID */
+.bottom-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+.table-card { background: #111722; border: 1px solid var(--dk-border); border-radius: var(--card-r); padding: 24px; grid-column: span 2; }
+.mini-card { background: #111722; border: 1px solid var(--dk-border); border-radius: var(--card-r); padding: 24px; }
+.section-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.section-head-title { font-family: 'Cormorant Garamond', serif; font-size: 18px; font-weight: 600; color: var(--dk-paper); }
+.view-all { font-size: 12px; color: var(--dk-gold); cursor: pointer; font-family: 'DM Mono', monospace; text-decoration: none; transition: opacity 0.2s; }
+.view-all:hover { opacity: 0.7; }
+
+/* TABLE */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th { text-align: left; padding: 8px 12px; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dk-muted); border-bottom: 1px solid var(--dk-border); font-family: 'DM Mono', monospace; }
+.data-table td { padding: 11px 12px; border-bottom: 1px solid rgba(201,168,76,0.07); color: #c8c0b0; vertical-align: middle; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:hover td { background: rgba(201,168,76,0.04); }
+
+.badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 500; font-family: 'DM Mono', monospace; }
+.badge.returned { background: rgba(109,170,98,0.15); color: #6daa62; }
+.badge.overdue { background: rgba(224,90,64,0.15); color: #e05a40; }
+.badge.active { background: rgba(92,160,208,0.15); color: #5ca0d0; }
+.badge.student { background: rgba(201,168,76,0.15); color: var(--dk-gold); }
+.badge.general { background: rgba(130,110,90,0.2); color: #a08870; }
+.badge.professional { background: rgba(109,170,98,0.15); color: #6daa62; }
+.badge.senior { background: rgba(92,160,208,0.15); color: #5ca0d0; }
+
+/* GENRE LIST */
+.genre-list { display: flex; flex-direction: column; gap: 12px; }
+.genre-meta { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+.genre-name { color: var(--dk-paper); font-weight: 400; }
+.genre-count { font-family: 'DM Mono', monospace; color: var(--dk-muted); }
+.genre-bar-bg { height: 5px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+.genre-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--dk-gold), #e8b840); transition: width 1s ease; }
+
+/* COGNOS LAUNCH CARD */
+.cognos-launch-card {
+  background: #111722;
+  border: 1px solid var(--dk-border);
+  border-radius: var(--card-r);
+  overflow: hidden;
+  position: relative;
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cognos-launch-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(0,98,255,0.12) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 30%, rgba(0,180,216,0.08) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 90%, rgba(201,168,76,0.06) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.cognos-launch-inner {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 60px 40px;
+  max-width: 600px;
+  width: 100%;
+}
+
+.cognos-ibm-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  background: linear-gradient(135deg, rgba(0,98,255,0.2), rgba(0,180,216,0.15));
+  border: 1px solid rgba(0,98,255,0.3);
+  border-radius: 16px;
+  padding: 12px 24px;
+  margin-bottom: 28px;
+}
+
+.ibm-text {
+  font-family: 'DM Mono', monospace;
+  font-size: 22px;
+  font-weight: 500;
+  color: #60a8ff;
+  letter-spacing: 4px;
+}
+
+.cognos-launch-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--dk-paper);
+  margin-bottom: 10px;
+}
+
+.cognos-launch-sub {
+  font-size: 12px;
+  font-family: 'DM Mono', monospace;
+  color: var(--dk-muted);
+  margin-bottom: 36px;
+}
+
+.cognos-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 36px;
+  text-align: left;
+}
+
+.cognos-info-item {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 10px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cognos-info-icon { font-size: 20px; flex-shrink: 0; }
+.cognos-info-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dk-muted); margin-bottom: 3px; }
+.cognos-info-val { font-size: 13px; color: var(--dk-paper); font-family: 'DM Mono', monospace; }
+
+.cognos-launch-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.cognos-launch-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 16px 36px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Outfit', sans-serif;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.2s;
+  border: none;
+  width: 100%;
+  max-width: 360px;
+  letter-spacing: 0.3px;
+}
+
+.cognos-launch-btn.primary {
+  background: linear-gradient(135deg, #0062ff, #00b4d8);
+  color: white;
+  box-shadow: 0 8px 32px rgba(0,98,255,0.3);
+}
+
+.cognos-launch-btn.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,98,255,0.45);
+}
+
+.cognos-launch-btn.secondary {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: var(--dk-paper);
+}
+
+.cognos-launch-btn.secondary:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.2);
+}
+
+.cognos-launch-hint {
+  font-size: 12px;
+  color: var(--dk-muted);
+  line-height: 1.7;
+  background: rgba(201,168,76,0.06);
+  border: 1px solid rgba(201,168,76,0.15);
+  border-radius: 10px;
+  padding: 14px 18px;
+}
+
+.cognos-launch-hint strong { color: var(--dk-gold); }
+
+/* MEMBER SECTION */
+.member-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+.member-card { background: #111722; border: 1px solid var(--dk-border); border-radius: var(--card-r); padding: 20px; display: flex; flex-direction: column; gap: 12px; transition: transform 0.2s; }
+.member-card:hover { transform: translateY(-2px); }
+.member-card-top { display: flex; align-items: center; gap: 12px; }
+.member-avatar-lg { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; color: white; flex-shrink: 0; }
+.member-name { font-size: 14px; font-weight: 500; color: var(--dk-paper); }
+.member-id { font-size: 11px; color: var(--dk-muted); font-family: 'DM Mono', monospace; }
+.member-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.ms { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 8px 12px; }
+.ms-val { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--dk-gold); }
+.ms-label { font-size: 10px; color: var(--dk-muted); text-transform: uppercase; letter-spacing: 0.08em; }
+
+/* BRANCH / FULL-WIDTH */
+.full-width-card { background: #111722; border: 1px solid var(--dk-border); border-radius: var(--card-r); padding: 24px; margin-bottom: 24px; }
+
+/* FINE PROGRESS */
+.fine-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(201,168,76,0.07); }
+.fine-item:last-child { border-bottom: none; }
+.fine-branch { width: 140px; font-size: 13px; color: var(--dk-paper); flex-shrink: 0; }
+.fine-bar-wrap { flex: 1; }
+.fine-bar-bg { height: 6px; background: rgba(255,255,255,0.07); border-radius: 99px; overflow: hidden; }
+.fine-bar-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--dk-rust), #e06040); }
+.fine-amount { font-family: 'DM Mono', monospace; font-size: 13px; color: #e05a40; width: 60px; text-align: right; flex-shrink: 0; }
+
+/* SCROLL */
+.main::-webkit-scrollbar { width: 6px; }
+.main::-webkit-scrollbar-track { background: transparent; }
+.main::-webkit-scrollbar-thumb { background: var(--dk-border); border-radius: 99px; }
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.section.active .kpi-card { animation: fadeUp 0.4s ease both; }
+.kpi-card:nth-child(1) { animation-delay: 0s; }
+.kpi-card:nth-child(2) { animation-delay: 0.08s; }
+.kpi-card:nth-child(3) { animation-delay: 0.16s; }
+.kpi-card:nth-child(4) { animation-delay: 0.24s; }
+.section.active .chart-card,
+.section.active .table-card,
+.section.active .mini-card { animation: fadeUp 0.5s ease 0.2s both; }
+
+/* SEARCH DROPDOWN */
+.search-bar { position: relative; }
+.search-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0; right: 0;
+  background: #161c24;
+  border: 1px solid var(--dk-border);
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 999;
+  box-shadow: 0 16px 48px rgba(0,0,0,0.6);
+  max-height: 380px;
+  overflow-y: auto;
+  min-width: 340px;
+}
+.search-dropdown::-webkit-scrollbar { width: 4px; }
+.search-dropdown::-webkit-scrollbar-thumb { background: var(--dk-border); border-radius: 99px; }
+
+.search-group-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--dk-muted);
+  padding: 10px 16px 6px;
+  border-top: 1px solid rgba(201,168,76,0.08);
+}
+.search-group-label:first-child { border-top: none; }
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-radius: 0;
+}
+.search-result-item:hover,
+.search-result-item.focused {
+  background: rgba(201,168,76,0.08);
+}
+.search-result-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.search-result-main { flex: 1; min-width: 0; }
+.search-result-title {
+  font-size: 13px;
+  color: var(--dk-paper);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.search-result-title mark {
+  background: rgba(201,168,76,0.3);
+  color: var(--dk-gold);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+.search-result-sub {
+  font-size: 11px;
+  color: var(--dk-muted);
+  font-family: 'DM Mono', monospace;
+  margin-top: 2px;
+}
+.search-result-tag {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+  flex-shrink: 0;
+}
+.search-no-results {
+  padding: 24px 16px;
+  text-align: center;
+  color: var(--dk-muted);
+  font-size: 13px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1200px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .charts-grid { grid-template-columns: 1fr; }
+  .bottom-grid { grid-template-columns: 1fr; }
+  .table-card { grid-column: span 1; }
+  .member-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════
+     LOGIN PAGE
+══════════════════════════════════════ -->
+<div id="login-page">
+  <div class="left-panel">
+    <div class="deco-circle c1"></div>
+    <div class="deco-circle c2"></div>
+    <div class="deco-circle c3"></div>
+
+    <div class="login-brand">
+      <div class="login-brand-mark">
+        <div class="login-brand-icon">📚</div>
+        <div class="login-brand-name">KnowledgeHub</div>
+      </div>
+      <div class="login-brand-sub">CS12 Library Intelligence Platform</div>
+    </div>
+
+    <div class="hero">
+      <div class="hero-eyebrow">Library Analytics System</div>
+      <h1>Where <em>Knowledge</em><br/>Meets Insight</h1>
+      <p>Access real-time circulation data, member analytics, and branch performance across all 10 KnowledgeHub locations — all from one unified platform.</p>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-value">200</div>
+        <div class="stat-label">Active Members</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-value">10</div>
+        <div class="stat-label">Branches</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-item">
+        <div class="stat-value">3.02</div>
+        <div class="stat-label">Avg Satisfaction</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="form-card">
+      <div class="form-header">
+        <h2>Welcome back</h2>
+        <p>Sign in to access your library dashboard</p>
+        <div class="any-hint">✦ Enter any username & password to sign in</div>
+      </div>
+
+      <div class="field-group">
+        <label for="username">Username</label>
+        <div class="input-wrap">
+          <span class="icon">👤</span>
+          <input type="text" id="username" placeholder="Enter any username" autocomplete="username"/>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label for="password">Password</label>
+        <div class="input-wrap">
+          <span class="icon">🔒</span>
+          <input type="password" id="password" placeholder="Enter any password" autocomplete="current-password"/>
+          <button class="toggle-pass" onclick="togglePass()" id="toggleBtn" title="Show/hide password">👁</button>
+        </div>
+      </div>
+
+      <div class="form-options">
+        <label class="remember">
+          <input type="checkbox" id="remember"/>
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="forgot-link">Forgot password?</a>
+      </div>
+
+      <button class="btn-login" id="loginBtn" onclick="handleLogin()">
+        <div class="btn-inner">
+          <span>Sign In to Dashboard</span>
+          <span>→</span>
+        </div>
+      </button>
+
+      <div class="divider"><span>or use quick login</span></div>
+
+      <div class="demo-creds">
+        <p>Quick Login</p>
+        <div class="cred-row">
+          <div class="cred-pill" onclick="fillCreds('admin','admin123')">🏛 Admin</div>
+          <div class="cred-pill" onclick="fillCreds('librarian','lib2024')">📖 Librarian</div>
+          <div class="cred-pill" onclick="fillCreds('viewer','view2024')">👁 Viewer</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     DASHBOARD PAGE
+══════════════════════════════════════ -->
+<div id="dashboard-page">
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="brand-icon">📚</div>
+      <div class="brand-name">
+        KnowledgeHub
+        <small>CS12 — Library System</small>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-label">Main</div>
+      <div class="nav-item active" onclick="navigate(this,'overview')">
+        <span class="nav-icon">◈</span> Overview
+      </div>
+      <div class="nav-item" onclick="navigate(this,'cognos')">
+        <span class="nav-icon">⬡</span> IBM Cognos Dashboard
+      </div>
+
+      <div class="nav-section-label">Library</div>
+      <div class="nav-item" onclick="navigate(this,'circulation')">
+        <span class="nav-icon">⟳</span> Circulation
+        <span class="nav-badge">155</span>
+      </div>
+      <div class="nav-item" onclick="navigate(this,'members')">
+        <span class="nav-icon">◉</span> Members
+      </div>
+      <div class="nav-item" onclick="navigate(this,'branches')">
+        <span class="nav-icon">⊞</span> Branches
+      </div>
+
+      <div class="nav-section-label">Analytics</div>
+      <div class="nav-item" onclick="navigate(this,'genres')">
+        <span class="nav-icon">⬡</span> Genre Analysis
+      </div>
+      <div class="nav-item" onclick="navigate(this,'fines')">
+        <span class="nav-icon">⚠</span> Fines & Overdue
+        <span class="nav-badge">₹5032</span>
+      </div>
+    </nav>
+
+    <div class="sidebar-user">
+      <div class="user-avatar" id="user-avatar">A</div>
+      <div class="user-info">
+        <div class="user-name" id="user-name-display">Admin</div>
+        <div class="user-role" id="user-role-display">Administrator</div>
+      </div>
+      <button class="logout-btn" onclick="logout()" title="Logout">⎋</button>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <main class="main">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="page-title" id="page-title">
+        Overview <span id="page-subtitle">Dashboard</span>
+      </div>
+      <div class="search-bar" style="position:relative;">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="text" id="global-search" placeholder="Search members, books, branches..." autocomplete="off" oninput="handleSearch(this.value)" onkeydown="searchKeyNav(event)"/>
+        <div id="search-results" class="search-dropdown" style="display:none;"></div>
+      </div>
+      <div class="topbar-icon has-notif" title="Notifications">🔔</div>
+      <div class="topbar-icon" title="Settings">⚙</div>
+      <div class="date-tag" id="date-display"></div>
+    </div>
+
+    <!-- ═══ CONTENT ═══ -->
+    <div class="content">
+
+      <!-- ────── OVERVIEW ────── -->
+      <div class="section active" id="sec-overview">
+        <div class="kpi-grid">
+          <div class="kpi-card gold">
+            <span class="kpi-icon">👥</span>
+            <div class="kpi-val">200</div>
+            <div class="kpi-label">Total Members</div>
+            <div class="kpi-delta">+12%</div>
+          </div>
+          <div class="kpi-card rust">
+            <span class="kpi-icon">⚠</span>
+            <div class="kpi-val">155</div>
+            <div class="kpi-label">Overdue Books</div>
+            <div class="kpi-delta down">+8%</div>
+          </div>
+          <div class="kpi-card sage">
+            <span class="kpi-icon">📖</span>
+            <div class="kpi-val">199</div>
+            <div class="kpi-label">Total Books</div>
+            <div class="kpi-delta">+5%</div>
+          </div>
+          <div class="kpi-card sky">
+            <span class="kpi-icon">⭐</span>
+            <div class="kpi-val">3.02</div>
+            <div class="kpi-label">Avg Satisfaction</div>
+            <div class="kpi-delta">3.0/5.0</div>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header">
+              <div><div class="chart-title">Membership Type Distribution</div><div class="chart-sub">Breakdown across all member types</div></div>
+              <div class="chart-tag">Live Data</div>
+            </div>
+            <canvas id="membershipChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><div><div class="chart-title">Age Group Split</div><div class="chart-sub">Member demographics</div></div></div>
+            <canvas id="ageChart"></canvas>
+          </div>
+        </div>
+
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header"><div><div class="chart-title">Top Genres by Circulation</div><div class="chart-sub">Books issued per genre</div></div></div>
+            <canvas id="genreChart"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><div><div class="chart-title">Format Preference</div><div class="chart-sub">Physical / Digital / Audio</div></div></div>
+            <canvas id="formatChart"></canvas>
+          </div>
+        </div>
+
+        <div class="bottom-grid">
+          <div class="table-card">
+            <div class="section-head">
+              <div class="section-head-title">Recent Circulation Records</div>
+              <a class="view-all" onclick="navigate(document.querySelector('[onclick*=circulation]'),'circulation')">View All →</a>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr><th>Member</th><th>Book</th><th>Genre</th><th>Branch</th><th>Status</th><th>Fine</th></tr>
+              </thead>
+              <tbody id="recent-table"></tbody>
+            </table>
+          </div>
+          <div class="mini-card">
+            <div class="section-head"><div class="section-head-title">Top Genres</div></div>
+            <div class="genre-list" id="genre-mini-list"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ────── COGNOS ────── -->
+      <div class="section" id="sec-cognos">
+        <div class="cognos-launch-card">
+          <div class="cognos-launch-bg"></div>
+          <div class="cognos-launch-inner">
+            <div class="cognos-ibm-badge">
+              <span style="font-size:28px;">📊</span>
+              <span class="ibm-text">IBM</span>
+            </div>
+            <h2 class="cognos-launch-title">Cognos Analytics Dashboard</h2>
+            <p class="cognos-launch-sub">CS12 KnowledgeHub · Live Dataset · ap2.ca.analytics.ibm.com</p>
+
+            <div class="cognos-info-grid">
+              <div class="cognos-info-item">
+                <div class="cognos-info-icon">📁</div>
+                <div>
+                  <div class="cognos-info-label">Project</div>
+                  <div class="cognos-info-val">Dashboard-proj</div>
+                </div>
+              </div>
+              <div class="cognos-info-item">
+                <div class="cognos-info-icon">🌐</div>
+                <div>
+                  <div class="cognos-info-label">Region</div>
+                  <div class="cognos-info-val">Asia Pacific 2</div>
+                </div>
+              </div>
+              <div class="cognos-info-item">
+                <div class="cognos-info-icon">🔍</div>
+                <div>
+                  <div class="cognos-info-label">View Mode</div>
+                  <div class="cognos-info-val">Dashboard · nav_filter ON</div>
+                </div>
+              </div>
+              <div class="cognos-info-item">
+                <div class="cognos-info-icon">🔗</div>
+                <div>
+                  <div class="cognos-info-label">Sub View</div>
+                  <div class="cognos-info-val">model0000019d…00000008</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="cognos-launch-actions">
+              <button class="cognos-launch-btn primary" onclick="openCognos()">
+                <span>↗</span> Open IBM Cognos Dashboard
+              </button>
+              <a class="cognos-launch-btn secondary" href="https://ap2.ca.analytics.ibm.com/bi/" target="_blank">
+                🔐 Go to IBM Login First
+              </a>
+            </div>
+
+            <p class="cognos-launch-hint">
+              💡 Tip: Click <strong>"Go to IBM Login First"</strong> to sign into IBM Cloud, then click <strong>"Open IBM Cognos Dashboard"</strong> to view your live data.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ────── CIRCULATION ────── -->
+      <div class="section" id="sec-circulation">
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="kpi-card rust"><span class="kpi-icon">⚠</span><div class="kpi-val">155</div><div class="kpi-label">Overdue Records</div></div>
+          <div class="kpi-card gold"><span class="kpi-icon">₹</span><div class="kpi-val">5,032</div><div class="kpi-label">Total Fines (₹)</div></div>
+          <div class="kpi-card sage"><span class="kpi-icon">↩</span><div class="kpi-val">45</div><div class="kpi-label">Returned On Time</div></div>
+        </div>
+        <div class="full-width-card">
+          <div class="section-head">
+            <div class="section-head-title">All Circulation Records</div>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <select id="status-filter" onchange="renderCirculation()" style="background:#0d1117;color:#c8c0b0;border:1px solid var(--dk-border);border-radius:8px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:13px;outline:none;">
+                <option value="">All Status</option>
+                <option value="overdue">Overdue</option>
+                <option value="returned">Returned</option>
+              </select>
+              <select id="genre-filter" onchange="renderCirculation()" style="background:#0d1117;color:#c8c0b0;border:1px solid var(--dk-border);border-radius:8px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:13px;outline:none;">
+                <option value="">All Genres</option>
+              </select>
+            </div>
+          </div>
+          <table class="data-table">
+            <thead>
+              <tr><th>#</th><th>Member</th><th>Book Title</th><th>Author</th><th>Genre</th><th>Branch</th><th>Issue Date</th><th>Days Overdue</th><th>Fine (₹)</th><th>Status</th></tr>
+            </thead>
+            <tbody id="circ-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ────── MEMBERS ────── -->
+      <div class="section" id="sec-members">
+        <div class="kpi-grid">
+          <div class="kpi-card gold"><span class="kpi-icon">🎓</span><div class="kpi-val" id="m-student">–</div><div class="kpi-label">Students</div></div>
+          <div class="kpi-card sage"><span class="kpi-icon">💼</span><div class="kpi-val" id="m-professional">–</div><div class="kpi-label">Professionals</div></div>
+          <div class="kpi-card sky"><span class="kpi-icon">👤</span><div class="kpi-val" id="m-general">–</div><div class="kpi-label">General</div></div>
+          <div class="kpi-card rust"><span class="kpi-icon">🧓</span><div class="kpi-val" id="m-senior">–</div><div class="kpi-label">Senior</div></div>
+        </div>
+        <div class="member-grid" id="member-cards"></div>
+      </div>
+
+      <!-- ────── BRANCHES ────── -->
+      <div class="section" id="sec-branches">
+        <div class="full-width-card">
+          <div class="section-head"><div class="section-head-title">Branch Performance Overview</div></div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Branch</th><th>Total Issued</th><th>Overdue</th><th>Total Fine (₹)</th><th>Avg Satisfaction</th><th>Languages</th></tr>
+            </thead>
+            <tbody id="branch-table-body"></tbody>
+          </table>
+        </div>
+        <div class="chart-card">
+          <div class="chart-header"><div><div class="chart-title">Books Issued per Branch</div></div></div>
+          <canvas id="branchChart" style="max-height:300px;"></canvas>
+        </div>
+      </div>
+
+      <!-- ────── GENRES ────── -->
+      <div class="section" id="sec-genres">
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header"><div><div class="chart-title">Genre Distribution</div><div class="chart-sub">Books issued per genre</div></div></div>
+            <canvas id="genreDetailChart" style="max-height:300px;"></canvas>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><div><div class="chart-title">Language Breakdown</div></div></div>
+            <canvas id="langChart" style="max-height:300px;"></canvas>
+          </div>
+        </div>
+        <div class="full-width-card">
+          <div class="section-head"><div class="section-head-title">Genre + Satisfaction Analysis</div></div>
+          <table class="data-table">
+            <thead>
+              <tr><th>Genre</th><th>Books Count</th><th>Avg Satisfaction</th><th>Avg Overdue Days</th><th>Total Fine (₹)</th></tr>
+            </thead>
+            <tbody id="genre-detail-table"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- ────── FINES ────── -->
+      <div class="section" id="sec-fines">
+        <div class="kpi-grid" style="grid-template-columns:repeat(3,1fr)">
+          <div class="kpi-card rust"><span class="kpi-icon">₹</span><div class="kpi-val">5,032</div><div class="kpi-label">Total Outstanding</div></div>
+          <div class="kpi-card gold"><span class="kpi-icon">📅</span><div class="kpi-val">155</div><div class="kpi-label">Overdue Records</div></div>
+          <div class="kpi-card sage"><span class="kpi-icon">✓</span><div class="kpi-val" id="fine-paid-count">–</div><div class="kpi-label">Fines Paid</div></div>
+        </div>
+        <div class="charts-grid">
+          <div class="chart-card">
+            <div class="chart-header"><div><div class="chart-title">Fine Distribution by Branch</div></div></div>
+            <div class="fine-bars" id="fine-bars"></div>
+          </div>
+          <div class="chart-card">
+            <div class="chart-header"><div><div class="chart-title">Overdue by Membership Type</div></div></div>
+            <canvas id="overdueChart" style="max-height:260px;"></canvas>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </main>
+</div><!-- /dashboard-page -->
+
+<script>
+/* ══════════════════════════════════════
+   LOGIN LOGIC
+══════════════════════════════════════ */
+function fillCreds(u, p) {
+  document.getElementById('username').value = u;
+  document.getElementById('password').value = p;
+}
+
+function togglePass() {
+  const pw = document.getElementById('password');
+  const btn = document.getElementById('toggleBtn');
+  if (pw.type === 'password') { pw.type = 'text'; btn.textContent = '🙈'; }
+  else { pw.type = 'password'; btn.textContent = '👁'; }
+}
+
+function handleLogin() {
+  const u = document.getElementById('username').value.trim();
+  const p = document.getElementById('password').value.trim();
+
+  // Accept ANY non-empty username and password
+  if (!u || !p) {
+    document.getElementById('username').focus();
+    document.getElementById('username').style.borderColor = '#e05a40';
+    document.getElementById('password').style.borderColor = '#e05a40';
+    return;
+  }
+
+  const btn = document.getElementById('loginBtn');
+  btn.innerHTML = '<div class="btn-inner"><span>Signing in…</span><span>⏳</span></div>';
+  btn.disabled = true;
+
+  // Store user info in sessionStorage
+  sessionStorage.setItem('kh_user', u);
+  sessionStorage.setItem('kh_role', 'User');
+
+  setTimeout(() => {
+    showDashboard(u);
+  }, 700);
+}
+
+document.addEventListener('keydown', e => {
+  const loginPage = document.getElementById('login-page');
+  if (e.key === 'Enter' && loginPage.style.display !== 'none') handleLogin();
+});
+
+/* ══════════════════════════════════════
+   PAGE SWITCH
+══════════════════════════════════════ */
+function showDashboard(username) {
+  document.getElementById('login-page').style.display = 'none';
+  const dash = document.getElementById('dashboard-page');
+  dash.classList.add('visible');
+
+  // Set user info in sidebar
+  const displayName = username.charAt(0).toUpperCase() + username.slice(1);
+  document.getElementById('user-name-display').textContent = displayName;
+  document.getElementById('user-role-display').textContent = 'Library User';
+  document.getElementById('user-avatar').textContent = displayName.charAt(0).toUpperCase();
+
+  // Set date
+  document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-IN', {weekday:'short',day:'2-digit',month:'short',year:'numeric'});
+
+  // Init charts (only once)
+  initDashboard();
+}
+
+function logout() {
+  sessionStorage.clear();
+  document.getElementById('dashboard-page').classList.remove('visible');
+  document.getElementById('login-page').style.display = 'flex';
+  const btn = document.getElementById('loginBtn');
+  btn.innerHTML = '<div class="btn-inner"><span>Sign In to Dashboard</span><span>→</span></div>';
+  btn.disabled = false;
+  document.getElementById('username').value = '';
+  document.getElementById('password').value = '';
+  document.getElementById('username').style.borderColor = '';
+  document.getElementById('password').style.borderColor = '';
+}
+
+/* ══════════════════════════════════════
+   DASHBOARD LOGIC
+══════════════════════════════════════ */
+let dashboardInited = false;
+
+function initDashboard() {
+  if (dashboardInited) return;
+  dashboardInited = true;
+
+  const DATA = [
+    {id:"MEM0001",name:"Member_001",age:"50+",type:"General",branch:"KH West",bookId:"BK0057",title:"Book_057",author:"Author_9",genre:"History",lang:"English",year:2002,format:"Audio",issue:"2024-11-12",due:"2024-12-12",ret:"2025-01-24",overdue:43,fine:215,finePaid:"Yes",libr:"Librarian_3",renew:1,loginFreq:1,sat:4.8},
+    {id:"MEM0002",name:"Member_002",age:"36-50",type:"Student",branch:"KH South",bookId:"BK0131",title:"Book_131",author:"Author_4",genre:"Technology",lang:"Hindi",year:2013,format:"Digital",issue:"2024-08-14",due:"2024-09-14",ret:"2024-09-15",overdue:1,fine:5,finePaid:"No",libr:"Librarian_5",renew:2,loginFreq:11,sat:1.9},
+    {id:"MEM0003",name:"Member_003",age:"Under 18",type:"Professional",branch:"KH Central",bookId:"BK0010",title:"Book_010",author:"Author_8",genre:"Arts",lang:"Kannada",year:2018,format:"Physical",issue:"2024-07-02",due:"2024-08-01",ret:"2024-10-18",overdue:78,fine:390,finePaid:"Yes",libr:"Librarian_2",renew:0,loginFreq:25,sat:1.8},
+    {id:"MEM0004",name:"Member_004",age:"26-35",type:"Senior",branch:"KH University Branch",bookId:"BK0143",title:"Book_143",author:"Author_1",genre:"Philosophy",lang:"Telugu",year:2010,format:"Audio",issue:"2024-11-21",due:"2024-12-21",ret:"2025-02-08",overdue:49,fine:245,finePaid:"No",libr:"Librarian_4",renew:3,loginFreq:14,sat:4.2},
+    {id:"MEM0005",name:"Member_005",age:"18-25",type:"General",branch:"KH Suburban A",bookId:"BK0085",title:"Book_085",author:"Author_6",genre:"Business",lang:"Tamil",year:2015,format:"Physical",issue:"2024-09-05",due:"2024-10-05",ret:"2024-10-05",overdue:0,fine:0,finePaid:"Yes",libr:"Librarian_1",renew:1,loginFreq:8,sat:3.5},
+    {id:"MEM0006",name:"Member_006",age:"50+",type:"Student",branch:"KH Tech Park",bookId:"BK0022",title:"Book_022",author:"Author_3",genre:"Fiction",lang:"English",year:2020,format:"Digital",issue:"2024-10-10",due:"2024-11-10",ret:"2024-12-20",overdue:40,fine:200,finePaid:"No",libr:"Librarian_6",renew:0,loginFreq:3,sat:2.1},
+    {id:"MEM0007",name:"Member_007",age:"36-50",type:"Professional",branch:"KH Suburban B",bookId:"BK0178",title:"Book_178",author:"Author_7",genre:"Self-Help",lang:"Hindi",year:2019,format:"Physical",issue:"2024-12-01",due:"2024-12-31",ret:"2025-01-15",overdue:15,fine:75,finePaid:"Yes",libr:"Librarian_3",renew:2,loginFreq:19,sat:4.5},
+    {id:"MEM0008",name:"Member_008",age:"Under 18",type:"General",branch:"KH North",bookId:"BK0099",title:"Book_099",author:"Author_2",genre:"Science",lang:"Tamil",year:2017,format:"Audio",issue:"2024-08-20",due:"2024-09-20",ret:"2024-11-05",overdue:46,fine:230,finePaid:"No",libr:"Librarian_7",renew:1,loginFreq:5,sat:2.8},
+    {id:"MEM0009",name:"Member_009",age:"26-35",type:"Student",branch:"KH East",bookId:"BK0044",title:"Book_044",author:"Author_5",genre:"Children",lang:"Kannada",year:2021,format:"Physical",issue:"2024-07-15",due:"2024-08-15",ret:"2024-08-15",overdue:0,fine:0,finePaid:"Yes",libr:"Librarian_8",renew:0,loginFreq:22,sat:4.9},
+    {id:"MEM0010",name:"Member_010",age:"18-25",type:"Senior",branch:"KH City Mall",bookId:"BK0200",title:"Book_200",author:"Author_10",genre:"Biography",lang:"Telugu",year:2016,format:"Digital",issue:"2024-11-05",due:"2024-12-05",ret:"2025-01-10",overdue:36,fine:180,finePaid:"Yes",libr:"Librarian_9",renew:1,loginFreq:11,sat:3.3},
+    {id:"MEM0011",name:"Member_011",age:"50+",type:"General",branch:"KH West",bookId:"BK0030",title:"Book_030",author:"Author_4",genre:"History",lang:"English",year:2008,format:"Physical",issue:"2024-09-12",due:"2024-10-12",ret:"2024-12-01",overdue:50,fine:250,finePaid:"No",libr:"Librarian_2",renew:3,loginFreq:7,sat:1.5},
+    {id:"MEM0012",name:"Member_012",age:"36-50",type:"Student",branch:"KH South",bookId:"BK0115",title:"Book_115",author:"Author_6",genre:"Technology",lang:"Hindi",year:2022,format:"Digital",issue:"2024-10-22",due:"2024-11-22",ret:"2024-11-22",overdue:0,fine:0,finePaid:"Yes",libr:"Librarian_5",renew:0,loginFreq:16,sat:4.7},
+    {id:"MEM0013",name:"Member_013",age:"Under 18",type:"Professional",branch:"KH Central",bookId:"BK0067",title:"Book_067",author:"Author_9",genre:"Arts",lang:"Tamil",year:2014,format:"Audio",issue:"2024-08-08",due:"2024-09-08",ret:"2024-10-25",overdue:47,fine:235,finePaid:"No",libr:"Librarian_1",renew:1,loginFreq:4,sat:2.3},
+    {id:"MEM0014",name:"Member_014",age:"26-35",type:"General",branch:"KH University Branch",bookId:"BK0152",title:"Book_152",author:"Author_3",genre:"Philosophy",lang:"English",year:2011,format:"Physical",issue:"2024-12-10",due:"2025-01-10",ret:"2025-02-28",overdue:49,fine:245,finePaid:"Yes",libr:"Librarian_4",renew:2,loginFreq:9,sat:3.8},
+    {id:"MEM0015",name:"Member_015",age:"18-25",type:"Senior",branch:"KH Suburban A",bookId:"BK0088",title:"Book_088",author:"Author_7",genre:"Business",lang:"Kannada",year:2019,format:"Digital",issue:"2024-07-28",due:"2024-08-28",ret:"2024-08-28",overdue:0,fine:0,finePaid:"Yes",libr:"Librarian_6",renew:1,loginFreq:20,sat:4.1},
+    {id:"MEM0016",name:"Member_016",age:"50+",type:"Student",branch:"KH Tech Park",bookId:"BK0033",title:"Book_033",author:"Author_8",genre:"Fiction",lang:"Telugu",year:2020,format:"Physical",issue:"2024-11-18",due:"2024-12-18",ret:"2025-01-30",overdue:43,fine:215,finePaid:"No",libr:"Librarian_3",renew:0,loginFreq:2,sat:2.6},
+    {id:"MEM0017",name:"Member_017",age:"36-50",type:"Professional",branch:"KH Suburban B",bookId:"BK0190",title:"Book_190",author:"Author_1",genre:"Self-Help",lang:"Hindi",year:2017,format:"Audio",issue:"2024-09-25",due:"2024-10-25",ret:"2024-11-10",overdue:16,fine:80,finePaid:"Yes",libr:"Librarian_7",renew:2,loginFreq:13,sat:4.4},
+    {id:"MEM0018",name:"Member_018",age:"Under 18",type:"General",branch:"KH North",bookId:"BK0077",title:"Book_077",author:"Author_5",genre:"Science",lang:"Tamil",year:2016,format:"Digital",issue:"2024-08-05",due:"2024-09-05",ret:"2024-11-20",overdue:76,fine:380,finePaid:"No",libr:"Librarian_8",renew:0,loginFreq:6,sat:2.0},
+    {id:"MEM0019",name:"Member_019",age:"26-35",type:"Student",branch:"KH East",bookId:"BK0122",title:"Book_122",author:"Author_2",genre:"Children",lang:"English",year:2023,format:"Physical",issue:"2024-10-30",due:"2024-11-30",ret:"2024-11-30",overdue:0,fine:0,finePaid:"Yes",libr:"Librarian_9",renew:1,loginFreq:18,sat:4.6},
+    {id:"MEM0020",name:"Member_020",age:"18-25",type:"Senior",branch:"KH City Mall",bookId:"BK0055",title:"Book_055",author:"Author_10",genre:"Biography",lang:"Kannada",year:2015,format:"Audio",issue:"2024-12-15",due:"2025-01-15",ret:"2025-02-20",overdue:36,fine:180,finePaid:"No",libr:"Librarian_2",renew:3,loginFreq:10,sat:3.2},
+  ];
+
+  const BRANCHES = ["KH West","KH South","KH Central","KH University Branch","KH Suburban A","KH Tech Park","KH Suburban B","KH North","KH East","KH City Mall"];
+  const GENRES = ["History","Technology","Arts","Philosophy","Business","Fiction","Self-Help","Science","Children","Biography"];
+  const LANGS = ["English","Hindi","Kannada","Telugu","Tamil"];
+  const COLORS = ['#c9a84c','#e05a40','#6daa62','#5ca0d0','#9b6daa','#e08040','#40a0b0','#d06080','#80a040','#6080d0'];
+
+  Chart.register(ChartDataLabels);
+  Chart.defaults.color = '#7a7060';
+  Chart.defaults.font.family = "'DM Mono', monospace";
+  Chart.defaults.font.size = 11;
+
+  // Default: hide datalabels globally, enable per chart
+  Chart.defaults.set('plugins.datalabels', { display: false });
+
+  function chartOpts(extra={}) {
+    return { plugins: { legend: { labels: { color: '#8a8070', boxWidth: 12, font: { size: 11 } } } }, ...extra };
+  }
+
+  // Datalabels config for bar charts (show count on top)
+  const barLabels = {
+    plugins: {
+      datalabels: {
+        display: true,
+        anchor: 'end',
+        align: 'end',
+        color: '#e8e0d0',
+        font: { size: 11, weight: '600', family: "'DM Mono', monospace" },
+        formatter: v => v
+      }
+    }
+  };
+
+  // Datalabels config for doughnut/pie (show % inside)
+  const donutLabels = {
+    plugins: {
+      datalabels: {
+        display: true,
+        color: '#fff',
+        font: { size: 11, weight: '600', family: "'DM Mono', monospace" },
+        formatter: (value, ctx) => {
+          const total = ctx.dataset.data.reduce((a,b)=>a+b,0);
+          const pct = Math.round(value/total*100);
+          return pct > 5 ? pct+'%' : '';
+        }
+      }
+    }
+  };
+
+  // Membership Chart
+  const memData = {General:0,Student:0,Professional:0,Senior:0};
+  DATA.forEach(d => memData[d.type]++);
+  new Chart(document.getElementById('membershipChart'), {
+    type:'bar',
+    data:{ labels: Object.keys(memData), datasets:[{ data: Object.values(memData), backgroundColor: ['#c9a84c','#5ca0d0','#6daa62','#e05a40'], borderRadius: 8, borderSkipped: false }] },
+    options:{...chartOpts(), scales:{ x:{grid:{color:'rgba(201,168,76,0.07)'},ticks:{color:'#8a8070'}}, y:{grid:{color:'rgba(201,168,76,0.07)'},ticks:{color:'#8a8070'}} }, plugins:{legend:{display:false}, datalabels:{display:true,anchor:'end',align:'end',color:'#e8e0d0',font:{size:12,weight:'600',family:"'DM Mono',monospace"},formatter:v=>v}}}
+  });
+
+  // Age Chart
+  const ageData = {"Under 18":0,"18-25":0,"26-35":0,"36-50":0,"50+":0};
+  DATA.forEach(d => ageData[d.age]++);
+  new Chart(document.getElementById('ageChart'), {
+    type:'doughnut',
+    data:{labels:Object.keys(ageData),datasets:[{data:Object.values(ageData),backgroundColor:COLORS,borderWidth:0,hoverOffset:8}]},
+    options:{...chartOpts(), cutout:'65%', plugins:{legend:{position:'bottom'}, datalabels:{display:true,color:'#fff',font:{size:11,weight:'600',family:"'DM Mono',monospace"},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);const p=Math.round(v/t*100);return p>5?p+'%':'';}}} }
+  });
+
+  // Genre Chart
+  const genreData = {};
+  GENRES.forEach(g => genreData[g]=0);
+  DATA.forEach(d => { if(genreData[d.genre]!==undefined) genreData[d.genre]++; });
+  new Chart(document.getElementById('genreChart'), {
+    type:'bar',
+    data:{ labels: Object.keys(genreData), datasets:[{data:Object.values(genreData),backgroundColor:COLORS,borderRadius:6,borderSkipped:false}] },
+    options:{...chartOpts(),indexAxis:'y',scales:{ x:{grid:{color:'rgba(201,168,76,0.07)'},ticks:{color:'#8a8070'}}, y:{grid:{display:false},ticks:{color:'#8a8070'}} },plugins:{legend:{display:false}, datalabels:{display:true,anchor:'end',align:'end',color:'#e8e0d0',font:{size:11,weight:'600',family:"'DM Mono',monospace"},formatter:v=>v}}}
+  });
+
+  // Format Chart
+  const fmtData = {Physical:0,Digital:0,Audio:0};
+  DATA.forEach(d => fmtData[d.format]++);
+  new Chart(document.getElementById('formatChart'), {
+    type:'polarArea',
+    data:{labels:Object.keys(fmtData),datasets:[{data:Object.values(fmtData),backgroundColor:['rgba(201,168,76,0.7)','rgba(92,160,208,0.7)','rgba(109,170,98,0.7)'],borderWidth:0}]},
+    options:{...chartOpts(), plugins:{legend:{labels:{color:'#8a8070',boxWidth:12}}, datalabels:{display:true,color:'#fff',font:{size:12,weight:'600',family:"'DM Mono',monospace"},formatter:v=>v}}}
+  });
+
+  // Recent Table
+  DATA.slice(0,8).forEach(d => {
+    const status = d.overdue > 0 ? 'overdue' : 'returned';
+    document.getElementById('recent-table').innerHTML += `<tr>
+      <td><strong style="color:var(--dk-paper)">${d.name}</strong><br/><span style="font-size:10px;color:var(--dk-muted);font-family:'DM Mono',monospace">${d.id}</span></td>
+      <td>${d.title}</td><td>${d.genre}</td><td>${d.branch}</td>
+      <td><span class="badge ${status}">${status==='overdue'?'⚠ Overdue':'✓ Returned'}</span></td>
+      <td style="font-family:'DM Mono',monospace;color:#e05a40">₹${d.fine}</td>
+    </tr>`;
+  });
+
+  // Genre Mini List
+  const maxG = Math.max(...Object.values(genreData));
+  const genreMini = document.getElementById('genre-mini-list');
+  Object.entries(genreData).sort((a,b)=>b[1]-a[1]).forEach(([g,c],i) => {
+    genreMini.innerHTML += `<div class="genre-item">
+      <div class="genre-meta"><span class="genre-name">${g}</span><span class="genre-count">${c}</span></div>
+      <div class="genre-bar-bg"><div class="genre-bar-fill" style="width:${(c/maxG*100)}%;background:${COLORS[i]}"></div></div>
+    </div>`;
+  });
+
+  // Circulation Filters
+  const genreFilter = document.getElementById('genre-filter');
+  GENRES.forEach(g => genreFilter.innerHTML += `<option value="${g}">${g}</option>`);
+
+  function renderCirculation() {
+    const sf = document.getElementById('status-filter').value;
+    const gf = document.getElementById('genre-filter').value;
+    let rows = DATA;
+    if(sf==='overdue') rows = rows.filter(d=>d.overdue>0);
+    if(sf==='returned') rows = rows.filter(d=>d.overdue===0);
+    if(gf) rows = rows.filter(d=>d.genre===gf);
+    const tbody = document.getElementById('circ-table-body');
+    tbody.innerHTML = '';
+    rows.forEach((d,i) => {
+      const st = d.overdue>0?'overdue':'returned';
+      tbody.innerHTML += `<tr>
+        <td style="font-family:'DM Mono',monospace;color:var(--dk-muted)">${i+1}</td>
+        <td><strong style="color:var(--dk-paper)">${d.name}</strong><br/><span class="badge ${d.type.toLowerCase()}" style="margin-top:4px;">${d.type}</span></td>
+        <td>${d.title}</td><td style="color:var(--dk-muted)">${d.author}</td><td>${d.genre}</td>
+        <td style="font-size:12px">${d.branch}</td>
+        <td style="font-family:'DM Mono',monospace;color:var(--dk-muted)">${d.issue}</td>
+        <td style="font-family:'DM Mono',monospace;color:${d.overdue>0?'#e05a40':'#6daa62'}">${d.overdue}</td>
+        <td style="font-family:'DM Mono',monospace;color:#e05a40">₹${d.fine}</td>
+        <td><span class="badge ${st}">${st==='overdue'?'⚠ Overdue':'✓ Returned'}</span></td>
+      </tr>`;
+    });
+  }
+  renderCirculation();
+  window.renderCirculation = renderCirculation;
+
+  // Members
+  const memberCounts = {General:0,Student:0,Professional:0,Senior:0};
+  DATA.forEach(d=>memberCounts[d.type]++);
+  document.getElementById('m-student').textContent = memberCounts.Student;
+  document.getElementById('m-professional').textContent = memberCounts.Professional;
+  document.getElementById('m-general').textContent = memberCounts.General;
+  document.getElementById('m-senior').textContent = memberCounts.Senior;
+
+  const avatarColors = ['#c9a84c','#5ca0d0','#6daa62','#e05a40','#9b6daa','#e08040'];
+  DATA.slice(0,12).forEach((d,i) => {
+    const col = avatarColors[i%avatarColors.length];
+    document.getElementById('member-cards').innerHTML += `<div class="member-card">
+      <div class="member-card-top">
+        <div class="member-avatar-lg" style="background:linear-gradient(135deg,${col},${col}99)">${d.name.replace('Member_','M')}</div>
+        <div><div class="member-name">${d.name}</div><div class="member-id">${d.id} · ${d.age}</div></div>
+      </div>
+      <div class="member-stats">
+        <div class="ms"><div class="ms-val">${d.sat}</div><div class="ms-label">Satisfaction</div></div>
+        <div class="ms"><div class="ms-val">₹${d.fine}</div><div class="ms-label">Fine</div></div>
+        <div class="ms"><div class="ms-val">${d.loginFreq}</div><div class="ms-label">Logins</div></div>
+        <div class="ms"><div class="ms-val">${d.renew}</div><div class="ms-label">Renewals</div></div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <span class="badge ${d.type.toLowerCase()}">${d.type}</span>
+        <span style="font-size:11px;color:var(--dk-muted)">${d.branch}</span>
+      </div>
+    </div>`;
+  });
+
+  // Branches
+  const branchStats = {};
+  BRANCHES.forEach(b => branchStats[b]={total:0,overdue:0,fine:0,sat:[],langs:new Set()});
+  DATA.forEach(d => {
+    if(branchStats[d.branch]) {
+      branchStats[d.branch].total++;
+      if(d.overdue>0) branchStats[d.branch].overdue++;
+      branchStats[d.branch].fine+=d.fine;
+      branchStats[d.branch].sat.push(d.sat);
+      branchStats[d.branch].langs.add(d.lang);
+    }
+  });
+  Object.entries(branchStats).forEach(([b,s]) => {
+    const avg = s.sat.length ? (s.sat.reduce((a,v)=>a+v,0)/s.sat.length).toFixed(1) : '–';
+    document.getElementById('branch-table-body').innerHTML += `<tr>
+      <td><strong style="color:var(--dk-paper)">${b}</strong></td>
+      <td style="font-family:'DM Mono',monospace">${s.total}</td>
+      <td style="font-family:'DM Mono',monospace;color:#e05a40">${s.overdue}</td>
+      <td style="font-family:'DM Mono',monospace;color:#e05a40">₹${s.fine}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--dk-gold)">${avg}</td>
+      <td style="font-size:11px;color:var(--dk-muted)">${[...s.langs].join(', ')}</td>
+    </tr>`;
+  });
+
+  new Chart(document.getElementById('branchChart'), {
+    type:'bar',
+    data:{ labels: BRANCHES.map(b=>b.replace('KH ','')), datasets:[{ label:'Books Issued', data: BRANCHES.map(b=>branchStats[b].total), backgroundColor: COLORS, borderRadius:8, borderSkipped:false }] },
+    options:{...chartOpts(),scales:{ x:{grid:{color:'rgba(201,168,76,0.07)'},ticks:{color:'#8a8070'}}, y:{grid:{color:'rgba(201,168,76,0.07)'},ticks:{color:'#8a8070'}} },plugins:{legend:{display:false}, datalabels:{display:true,anchor:'end',align:'end',color:'#e8e0d0',font:{size:11,weight:'600',family:"'DM Mono',monospace"},formatter:v=>v}}}
+  });
+
+  // Genre Detail
+  new Chart(document.getElementById('genreDetailChart'), {
+    type:'bar',
+    data:{ labels: GENRES, datasets:[{data:GENRES.map(g=>genreData[g]||0),backgroundColor:COLORS,borderRadius:8,borderSkipped:false}] },
+    options:{...chartOpts(),scales:{ x:{grid:{color:'rgba(201,168,76,0.07)'},ticks:{color:'#8a8070',font:{size:10}}}, y:{grid:{color:'rgba(201,168,76,0.07)'},ticks:{color:'#8a8070'}} },plugins:{legend:{display:false}, datalabels:{display:true,anchor:'end',align:'end',color:'#e8e0d0',font:{size:11,weight:'600',family:"'DM Mono',monospace"},formatter:v=>v}}}
+  });
+
+  const langData = {};
+  LANGS.forEach(l=>langData[l]=0);
+  DATA.forEach(d=>{if(langData[d.lang]!==undefined)langData[d.lang]++;});
+  new Chart(document.getElementById('langChart'), {
+    type:'doughnut',
+    data:{labels:LANGS,datasets:[{data:LANGS.map(l=>langData[l]),backgroundColor:COLORS,borderWidth:0,hoverOffset:8}]},
+    options:{...chartOpts(),cutout:'60%',plugins:{legend:{position:'bottom'}, datalabels:{display:true,color:'#fff',font:{size:11,weight:'600',family:"'DM Mono',monospace"},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);const p=Math.round(v/t*100);return p>5?p+'%':'';}}}  }
+  });
+
+  GENRES.forEach((g,i) => {
+    const rows = DATA.filter(d=>d.genre===g);
+    if(!rows.length){document.getElementById('genre-detail-table').innerHTML+=`<tr><td>${g}</td><td colspan="4" style="color:var(--dk-muted)">No data</td></tr>`;return;}
+    const avgSat = (rows.reduce((a,d)=>a+d.sat,0)/rows.length).toFixed(1);
+    const avgOver = (rows.reduce((a,d)=>a+d.overdue,0)/rows.length).toFixed(1);
+    const totFine = rows.reduce((a,d)=>a+d.fine,0);
+    document.getElementById('genre-detail-table').innerHTML += `<tr>
+      <td><strong style="color:${COLORS[i]}">${g}</strong></td>
+      <td style="font-family:'DM Mono',monospace">${rows.length}</td>
+      <td style="font-family:'DM Mono',monospace;color:var(--dk-gold)">${avgSat}</td>
+      <td style="font-family:'DM Mono',monospace;color:#e05a40">${avgOver} days</td>
+      <td style="font-family:'DM Mono',monospace;color:#e05a40">₹${totFine}</td>
+    </tr>`;
+  });
+
+  const paidCount = DATA.filter(d=>d.finePaid==='Yes').length;
+  document.getElementById('fine-paid-count').textContent = paidCount;
+
+  const branchFines = BRANCHES.map(b=>({b,f:branchStats[b].fine})).sort((a,x)=>x.f-a.f);
+  const maxF = branchFines[0].f;
+  branchFines.forEach(({b,f}) => {
+    document.getElementById('fine-bars').innerHTML += `<div class="fine-item">
+      <div class="fine-branch">${b.replace('KH ','')}</div>
+      <div class="fine-bar-wrap"><div class="fine-bar-bg"><div class="fine-bar-fill" style="width:${(f/maxF*100)}%"></div></div></div>
+      <div class="fine-amount">₹${f}</div>
+    </div>`;
+  });
+
+  const overdueByType = {General:0,Student:0,Professional:0,Senior:0};
+  DATA.filter(d=>d.overdue>0).forEach(d=>overdueByType[d.type]++);
+  new Chart(document.getElementById('overdueChart'), {
+    type:'doughnut',
+    data:{labels:Object.keys(overdueByType),datasets:[{data:Object.values(overdueByType),backgroundColor:['#c9a84c','#5ca0d0','#6daa62','#e05a40'],borderWidth:0,hoverOffset:8}]},
+    options:{...chartOpts(),cutout:'60%',plugins:{legend:{position:'bottom'}, datalabels:{display:true,color:'#fff',font:{size:11,weight:'600',family:"'DM Mono',monospace"},formatter:(v,ctx)=>{const t=ctx.dataset.data.reduce((a,b)=>a+b,0);const p=Math.round(v/t*100);return p>5?p+'%':'';}}} }
+  });
+
+  // Build search index after all data is ready
+  buildSearchIndex(DATA, BRANCHES, GENRES);
+}
+
+/* ══════════════════════════════════════
+   NAVIGATION
+══════════════════════════════════════ */
+const sections = {
+  overview:'sec-overview', cognos:'sec-cognos', circulation:'sec-circulation',
+  members:'sec-members', branches:'sec-branches', genres:'sec-genres', fines:'sec-fines'
+};
+
+const titles = {
+  overview:'Overview', cognos:'IBM Cognos Dashboard', circulation:'Circulation Records',
+  members:'Members', branches:'Branches', genres:'Genre Analysis', fines:'Fines & Overdue'
+};
+
+const subtitles = {
+  overview:'Dashboard', cognos:'Live Analytics', circulation:'CS12 · 200 Records',
+  members:'CS12 · 200 Members', branches:'10 Active Branches', genres:'10 Genres', fines:'₹5,032 Outstanding'
+};
+
+function navigate(el, key) {
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(el) el.classList.add('active');
+  Object.values(sections).forEach(s=>document.getElementById(s).classList.remove('active'));
+  document.getElementById(sections[key]).classList.add('active');
+  document.getElementById('page-title').innerHTML = `${titles[key]} <span>${subtitles[key]}</span>`;
+}
+
+/* ══════════════════════════════════════
+   COGNOS
+══════════════════════════════════════ */
+function openCognos() {
+  window.open('https://ap2.ca.analytics.ibm.com/bi/?perspective=dashboard&pathRef=.my_folders%2FDashboard-proj&action=view&mode=dashboard&subView=model0000019d57f20e6f_00000008&nav_filter=true','_blank');
+}
+
+/* ══════════════════════════════════════
+   GLOBAL SEARCH
+══════════════════════════════════════ */
+// Full searchable index — built once after dashboard init
+const SEARCH_INDEX = [];
+
+function buildSearchIndex(DATA, BRANCHES, GENRES) {
+  SEARCH_INDEX.length = 0;
+
+  // Members
+  DATA.forEach(d => {
+    SEARCH_INDEX.push({
+      type: 'member',
+      label: d.name,
+      sub: `${d.id} · ${d.type} · ${d.branch}`,
+      tag: d.type,
+      tagColor: d.type === 'Student' ? '#c9a84c' : d.type === 'Professional' ? '#6daa62' : d.type === 'Senior' ? '#5ca0d0' : '#a08870',
+      icon: '👤',
+      iconBg: 'rgba(201,168,76,0.12)',
+      section: 'members',
+      keywords: `${d.name} ${d.id} ${d.type} ${d.branch} ${d.age} ${d.lang}`.toLowerCase()
+    });
+  });
+
+  // Books / Circulation
+  DATA.forEach(d => {
+    SEARCH_INDEX.push({
+      type: 'book',
+      label: d.title,
+      sub: `${d.author} · ${d.genre} · ${d.branch}`,
+      tag: d.overdue > 0 ? 'Overdue' : 'Returned',
+      tagColor: d.overdue > 0 ? '#e05a40' : '#6daa62',
+      icon: '📖',
+      iconBg: 'rgba(92,160,208,0.12)',
+      section: 'circulation',
+      keywords: `${d.title} ${d.author} ${d.genre} ${d.bookId} ${d.branch}`.toLowerCase()
+    });
+  });
+
+  // Branches
+  BRANCHES.forEach(b => {
+    SEARCH_INDEX.push({
+      type: 'branch',
+      label: b,
+      sub: 'Library Branch',
+      tag: 'Branch',
+      tagColor: '#9b6daa',
+      icon: '🏛',
+      iconBg: 'rgba(155,109,170,0.12)',
+      section: 'branches',
+      keywords: b.toLowerCase()
+    });
+  });
+
+  // Genres
+  GENRES.forEach(g => {
+    SEARCH_INDEX.push({
+      type: 'genre',
+      label: g,
+      sub: 'Genre Analysis',
+      tag: 'Genre',
+      tagColor: '#e08040',
+      icon: '⬡',
+      iconBg: 'rgba(224,128,64,0.12)',
+      section: 'genres',
+      keywords: g.toLowerCase()
+    });
+  });
+
+  // Nav sections
+  [
+    { label: 'Overview Dashboard', sub: 'Main dashboard with KPIs & charts', icon: '◈', section: 'overview', kw: 'overview dashboard kpi' },
+    { label: 'Circulation Records', sub: 'All book issue & return records', icon: '⟳', section: 'circulation', kw: 'circulation records issued' },
+    { label: 'Fines & Overdue', sub: 'Fine collection and overdue tracking', icon: '⚠', section: 'fines', kw: 'fines overdue penalty' },
+    { label: 'IBM Cognos Dashboard', sub: 'Live analytics — IBM Cognos', icon: '📊', section: 'cognos', kw: 'cognos ibm analytics' },
+  ].forEach(s => {
+    SEARCH_INDEX.push({
+      type: 'nav',
+      label: s.label,
+      sub: s.sub,
+      tag: 'Page',
+      tagColor: '#7a7060',
+      icon: s.icon,
+      iconBg: 'rgba(255,255,255,0.06)',
+      section: s.section,
+      keywords: s.kw
+    });
+  });
+}
+
+let searchFocusIdx = -1;
+let searchResults = [];
+
+function highlight(text, query) {
+  if (!query) return text;
+  const re = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi');
+  return text.replace(re, '<mark>$1</mark>');
+}
+
+function handleSearch(val) {
+  const q = val.trim().toLowerCase();
+  const box = document.getElementById('search-results');
+
+  if (!q || q.length < 1) {
+    box.style.display = 'none';
+    searchResults = [];
+    searchFocusIdx = -1;
+    return;
+  }
+
+  // Score and filter
+  const scored = SEARCH_INDEX
+    .filter(item => item.keywords.includes(q) || item.label.toLowerCase().includes(q))
+    .map(item => {
+      let score = 0;
+      if (item.label.toLowerCase().startsWith(q)) score += 10;
+      if (item.label.toLowerCase().includes(q)) score += 5;
+      if (item.keywords.includes(q)) score += 2;
+      return { ...item, score };
+    })
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 12);
+
+  searchResults = scored;
+  searchFocusIdx = -1;
+
+  if (!scored.length) {
+    box.innerHTML = `<div class="search-no-results">😕 No results for "<strong>${val}</strong>"</div>`;
+    box.style.display = 'block';
+    return;
+  }
+
+  // Group by type
+  const groups = {};
+  const groupOrder = ['nav','member','book','branch','genre'];
+  const groupLabels = { nav:'Pages', member:'Members', book:'Books & Circulation', branch:'Branches', genre:'Genres' };
+  scored.forEach(item => {
+    if (!groups[item.type]) groups[item.type] = [];
+    groups[item.type].push(item);
+  });
+
+  let html = '';
+  groupOrder.forEach(type => {
+    if (!groups[type]) return;
+    html += `<div class="search-group-label">${groupLabels[type]}</div>`;
+    groups[type].forEach((item, i) => {
+      const globalIdx = scored.indexOf(item);
+      html += `
+        <div class="search-result-item" data-idx="${globalIdx}" onclick="selectSearchResult(${globalIdx})">
+          <div class="search-result-icon" style="background:${item.iconBg}">${item.icon}</div>
+          <div class="search-result-main">
+            <div class="search-result-title">${highlight(item.label, val.trim())}</div>
+            <div class="search-result-sub">${item.sub}</div>
+          </div>
+          <span class="search-result-tag" style="background:${item.tagColor}22;color:${item.tagColor};border:1px solid ${item.tagColor}44">${item.tag}</span>
+        </div>`;
+    });
+  });
+
+  box.innerHTML = html;
+  box.style.display = 'block';
+}
+
+function selectSearchResult(idx) {
+  const item = searchResults[idx];
+  if (!item) return;
+
+  // Navigate to the right section
+  const navEl = document.querySelector(`.nav-item[onclick*="${item.section}"]`);
+  navigate(navEl, item.section);
+
+  // If member — filter circulation to that member name
+  if (item.type === 'member' && item.section === 'members') {
+    // scroll to member cards
+    setTimeout(() => {
+      const cards = document.querySelectorAll('.member-card');
+      cards.forEach(c => {
+        if (c.innerText.includes(item.label)) {
+          c.style.outline = '2px solid var(--dk-gold)';
+          c.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          setTimeout(() => c.style.outline = '', 2500);
+        }
+      });
+    }, 100);
+  }
+
+  // Close search
+  document.getElementById('global-search').value = '';
+  document.getElementById('search-results').style.display = 'none';
+  searchResults = [];
+  searchFocusIdx = -1;
+}
+
+function searchKeyNav(e) {
+  const box = document.getElementById('search-results');
+  const items = box.querySelectorAll('.search-result-item');
+  if (!items.length) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    searchFocusIdx = Math.min(searchFocusIdx + 1, items.length - 1);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    searchFocusIdx = Math.max(searchFocusIdx - 1, 0);
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    if (searchFocusIdx >= 0) selectSearchResult(parseInt(items[searchFocusIdx].dataset.idx));
+    else if (searchResults.length) selectSearchResult(0);
+    return;
+  } else if (e.key === 'Escape') {
+    box.style.display = 'none';
+    searchResults = [];
+    searchFocusIdx = -1;
+    return;
+  }
+
+  items.forEach((el, i) => el.classList.toggle('focused', i === searchFocusIdx));
+  if (items[searchFocusIdx]) items[searchFocusIdx].scrollIntoView({ block: 'nearest' });
+}
+
+// Close search on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.search-bar')) {
+    const box = document.getElementById('search-results');
+    if (box) box.style.display = 'none';
+  }
+});
+</script>
+</body>
+</html>
